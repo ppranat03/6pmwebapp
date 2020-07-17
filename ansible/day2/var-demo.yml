@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: yes
+  vars_files:
+    - app-vars.yml
+  tasks:
+    - name: Install git
+      yum:
+        name: git
+        state: present
+    - name: clone git repo
+      git:
+        repo: "{{git_url}}"
+        dest: /tmp/hari
