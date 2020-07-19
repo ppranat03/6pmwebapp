@@ -36,6 +36,7 @@ pipeline {
     post {
         success {
             echo 'sending email about build success'
+            mail bcc: '', body: 'Successfully deployed Jenkins', cc: '', from: '', replyTo: '', subject: 'Successfully deployed', to: 'ppranat03@gmail.com'
         }
     }
 }
