@@ -36,12 +36,12 @@ pipeline {
     post {
         success {
             echo 'sending email about build success'
-            mail bcc: '', body: '''Hi Team,
-The app is successfully deployed .
+            mail bcc: '', body: """Hi Team, The app is successfully deployed .
+            ${BODY_URL}
 
 Thanks
 DevOps Team
-JavaHome''', subject: 'Successfully deployed', to: 'ppranat03@gmail.com'
+JavaHome """, subject: "${JOB_NAME}  - Successfully deployed", to: 'ppranat03@gmail.com'
         }
     }
 }
