@@ -6,9 +6,9 @@ pipeline{
     stages{
         stage('SCM Checkout'){
             steps{
-                git url: 'https://github.com/javahometech/6pmwebapp',
+                git url: 'https://github.com/ppranat03/6pmwebapp',
                 branch: 'master',
-                credentialsId: 'github'
+                
             }
         }
 
@@ -22,11 +22,11 @@ pipeline{
             steps{
                 sshagent(['tomcat-dev']) {
                     // stop tomcat
-                    sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.4.187 /opt/tomcat8/bin/shutdown.sh"
+                    sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.8.115 /opt/tomcat8/bin/shutdown.sh"
                     // copy war file to remote tomcat
-                    sh "scp target/6pmwebapp.war  ec2-user@172.31.4.187:/opt/tomcat8/webapps/"
+                    sh "scp target/6pmwebapp.war  ec2-user@172.31.8.115:/opt/tomcat8/webapps/"
                     // start tomcat
-                    sh "ssh ec2-user@172.31.4.187 /opt/tomcat8/bin/startup.sh"
+                    sh "ssh ec2-user@172.31.8.115 /opt/tomcat8/bin/startup.sh"
                 } 
             }
         }
@@ -38,7 +38,7 @@ pipeline{
 
 Thanks,
 DevOps Team.
-Java Home""", subject: "${JOB_NAME} - Successfully Deployed", to: 'kammana.hari@gmail.com'
+Java Home""", subject: "${JOB_NAME} - Successfully Deployed", to: 'ppranat03@gmail.com'
         }
 
         failure{
@@ -47,7 +47,7 @@ Java Home""", subject: "${JOB_NAME} - Successfully Deployed", to: 'kammana.hari@
 
 Thanks,
 DevOps Team.
-Java Home""", subject: "${JOB_NAME} - Deployment failed", to: 'kammana.hari@gmail.com'
+Java Home""", subject: "${JOB_NAME} - Deployment failed", to: 'ppranat03@gmail.com'
         }
     }
         
