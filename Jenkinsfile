@@ -6,8 +6,10 @@ pipeline {
 
     stages {
         stage('SCM Checkout') {
-            git branch: "${params['branchName']}",
+            steps{
+                git branch: "${params['branchName']}",
                 url: 'https://github.com/ppranat03/6pmwebapp'
+            }
         }
     }
 }
