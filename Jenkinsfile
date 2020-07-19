@@ -1,40 +1,37 @@
-pipeline{
+/* groovylint-disable-next-line CompileStatic */
+pipeline {
     agent any
-    environment{
-	  PATH = "${PATH}:${tool name: 'maven3', type: 'maven'}/bin"
-	}
-    stages{
+    environment {
+        PATH = "${PATH}:${tool name: 'maven3', type: 'maven'}/bin"
+    }
 
-        stage('Maven Build'){
-            steps{
-                sh "mvn clean package"
+    stages {
+        stage('SCM Checkout') {
+            steps {
+                git credentialsId: 'github',
+                    url: 'https://github.com/ppranat03/6pmwebapp',
+                    branch: 'master'
             }
         }
-
-        stage('Deploy - Dev'){
-            when {
-                branch 'develop'
-            }
-            steps{
-                echo "deploy to dev server"
+        stage('Maven build') {
+            steps {
+                script {
+                    sh  script: 'mvn  clean package'
+                }
             }
         }
+        stage('Deploy Dev') {
+            steps {
+                sshagent(['tomcat-dev']) {
+                    // stop tomcat
+                    sh "ssh ec2-user@172.31.8.115 /opt/tomcat8/bin/shutdown.sh"
+                    // copy war file to remote tomcat
+                    sh "scp target/6pmwebapp.war ec2-user@172.31.8.115:/opt/tomcat8/webapps/"
+                     // start tomcat
+                    sh "ssh ec2-user@172.31.8.115 /opt/tomcat8/bin/startup.sh"
 
-        stage('Deploy - UAT'){
-            when {
-                branch 'staging'
-            }
-            steps{
-                echo "deploy to uat server"
-            }
-        }
+                }
 
-        stage('Deploy - Prod'){
-            when {
-                branch 'master'
-            }
-            steps{
-                echo "deploy to prod server"
             }
         }
     }
