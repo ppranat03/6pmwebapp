@@ -1,55 +1,13 @@
-/* groovylint-disable-next-line CompileStatic */
 pipeline {
     agent any
-    environment {
-        PATH = "${PATH}:${tool name: 'maven3', type: 'maven'}/bin"
+    parameters {
+        string defaultValue: 'master', description: 'Choose the branch to build and deploy', name: 'branchName', trim: false
     }
 
     stages {
         stage('SCM Checkout') {
-            steps {
-                git credentialsId: 'github',
-                    url: 'https://github.com/ppranat03/6pmwebapp',
-                    branch: 'master'
-            }
-        }
-        stage('Maven build') {
-            steps {
-                script {
-                    sh  script: 'mvn  clean package'
-                }
-            }
-        }
-        stage('Deploy Dev') {
-            steps {
-                sshagent(['tomcat-dev']) {
-                    // stop tomcat
-                    sh 'ssh ec2-user@172.31.8.115 /opt/tomcat8/bin/shutdown.sh'
-                    // copy war file to remote tomcat
-                    sh 'scp target/6pmwebapp.war ec2-user@172.31.8.115:/opt/tomcat8/webapps/'
-                    // start tomcat
-                    sh 'ssh ec2-user@172.31.8.115 /opt/tomcat8/bin/startup.sh'
-                }
-            }
-        }
-    }
-    post {
-        success {
-            mail body: """Hi Team, The app is successfully deployed .
-            ${BUILD_URL}
-
-Thanks
-DevOps Team.
-Java Home """, subject: "${JOB_NAME}  - Successfully deployed", to: 'ppranat03@gmail.com'
-        }
-
-        failure  {
-            mail body: """Hi Team, The app got failed.
-            ${BUILD_URL}
-
-Thanks
-DevOps Team.
-Java Home """, subject: "${JOB_NAME}  - Deployment Failed", to: 'ppranat03@gmail.com'
+            git branch: "${params['branchName']}",
+                url: 'https://github.com/ppranat03/6pmwebapp'
         }
     }
 }
